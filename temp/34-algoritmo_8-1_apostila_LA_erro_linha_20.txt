@@ -1,0 +1,26 @@
+<'algoritmo','algoritmo'>
+<'declare','declare'>
+<'ponto1',IDENT>
+<',',','>
+<'ponto2',IDENT>
+<':',':'>
+<'registro',IDENT>
+<'x',IDENT>
+<',',','>
+<'y',IDENT>
+<',',','>
+<'z',IDENT>
+<':',':'>
+<'real','real'>
+<'fim',IDENT>
+<'_registro',IDENT>
+<'declare','declare'>
+<'distancia1',IDENT>
+<',',','>
+<'distancia2',IDENT>
+<':',':'>
+<'real','real'>
+<'leia','leia'>
+<'(','('>
+<'ponto1',IDENT>
+Linha 12: . - simbolo nao identificado

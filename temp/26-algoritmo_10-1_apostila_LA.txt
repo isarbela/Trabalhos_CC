@@ -1,0 +1,10 @@
+<'algoritmo','algoritmo'>
+<'declare','declare'>
+<'soma',IDENT>
+<',',','>
+<'contador',IDENT>
+<',',','>
+<'i',IDENT>
+<',',','>
+<'valor',IDENT>
+Linha 7: [ - simbolo nao identificado
