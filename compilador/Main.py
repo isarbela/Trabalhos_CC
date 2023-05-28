@@ -12,10 +12,14 @@ def main(argv):
     # Gerando os tokens
     lexer = AnalisadorLexer(input_stream)
 
-    # print(argv)
-
-    # Leitura dos tokens e salvando em um arquivo
+    # Leitura dos tokens e salvamento em arquivo
     while True:
+    # Se for um erro léxico, imprime o lexema e a linha do erro, indicando 
+    # o erro encontrado, podendo ser comentário não fechado, cadeia literal 
+    # não fechada ou símbolo não identificado.
+    # Se for um SELF (Palavra-chave) imprime o lexema nos dois campos do token
+    # Se for outro token, imprime o lexema e o tipo do token.
+    # A condição de parada é o fim do arquivo (EOF).
         
         t = lexer.nextToken()
         if t.type == Token.EOF:

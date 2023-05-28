@@ -8,29 +8,33 @@ SELF :	'algoritmo' | 'declare' | ':' | 'literal' | 'inteiro' | 'leia'
 	| '*' | '/' | '..' | 'real' | '%' | '>' | '<' | '<>' | '>=' | '<='
 	| '=' | 'se' | 'entao' | 'fim_se' | 'senao' | 'enquanto' | 'faca'
 	| 'fim_enquanto' |  '^' | '.' | '[' | ']' | 'registro' | 'fim_registro'
-	| 'e' | 'nao'
+	| 'e' | 'nao' | 'logico' | 'ou' | 'caso' | 'seja' | 'para' | 'ate' 
+	| 'fim_para' | 'fim_caso' | '&' | 'tipo' | 'procedimento' | 'var'
+	| 'funcao' | 'retorne' | 'fim_funcao' | 'fim_procedimento' | 'constante'
+	| 'verdadeiro' | 'falso'
 	; 
 
 // Detecção de números reais e inteiros.
-NUM_REAL : ('+'|'-')?('0'..'9')+ ('.' ('0'..'9')+)?
+// A ordem importa.
+NUM_INT	: /*('+'|'-')?*/('0'..'9')+
  	;
-NUM_INT	: ('+'|'-')?('0'..'9')+
+NUM_REAL : /*('+'|'-')?*/('0'..'9')+ ('.' ('0'..'9')+)?
  	;
 
 // Variáveis
-IDENT : ('a'..'z'|'A'..'Z' | '_') ('a'..'z'|'A'..'Z'|'0'..'9')*
+IDENT : ('a'..'z'|'A'..'Z' | '_') ('_' | 'a'..'z'|'A'..'Z'|'0'..'9')*
 	;
 
 // Cadeia de caracteres são identificadas através do operador de aspas
 // duplas, diferentemente do exemplo de aula que era aspas simples.
-CADEIA 	: '"' ( ESC_SEQ | ~('"'|'\\') )* '"'
+CADEIA 	: '"' ( ESC_SEQ | ~('"'|'\\' | '\n') )* '"'
 	;
 fragment
 ESC_SEQ	: '\\"';
 
 // Comentários são identificados através de chaves e fecha chaves.
 COMENTARIO
-    :   ('{' ~('\n'|'\r')* '\r'? '}') -> skip
+    :   ('{' ~('\n'|'\r' | '}')* '\r'?  '}') -> skip
     ;
 
 // Espaços em branco são ignorados.
