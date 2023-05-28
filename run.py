@@ -4,6 +4,8 @@
 # Salvar automaticamente na pasta "/temp/".
 import sys, os
 
+os.system("bash -c 'mkdir temp &> /dev/null'")
+
 path = sys.argv[1].strip()
 
 for file in os.listdir(path):

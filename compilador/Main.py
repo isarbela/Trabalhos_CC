@@ -12,6 +12,8 @@ def main(argv):
     # Gerando os tokens
     lexer = AnalisadorLexer(input_stream)
 
+    # print(argv)
+
     # Leitura dos tokens e salvando em um arquivo
     while True:
         

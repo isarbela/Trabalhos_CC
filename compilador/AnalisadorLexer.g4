@@ -7,7 +7,8 @@ SELF :	'algoritmo' | 'declare' | ':' | 'literal' | 'inteiro' | 'leia'
 	| 'escreva' | ',' | 'fim_algoritmo' | '(' | ')' | '<-' | '+' | '-'
 	| '*' | '/' | '..' | 'real' | '%' | '>' | '<' | '<>' | '>=' | '<='
 	| '=' | 'se' | 'entao' | 'fim_se' | 'senao' | 'enquanto' | 'faca'
-	| 'fim_enquanto' |  '^' | '.' | '[' | ']'
+	| 'fim_enquanto' |  '^' | '.' | '[' | ']' | 'registro' | 'fim_registro'
+	| 'e' | 'nao'
 	; 
 
 // Detecção de números reais e inteiros.
@@ -29,7 +30,7 @@ ESC_SEQ	: '\\"';
 
 // Comentários são identificados através de chaves e fecha chaves.
 COMENTARIO
-    :   '{' ~('\n'|'\r')* '\r'? '}' -> skip
+    :   ('{' ~('\n'|'\r')* '\r'? '}') -> skip
     ;
 
 // Espaços em branco são ignorados.
