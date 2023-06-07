@@ -1,6 +1,9 @@
 import sys
 from antlr4 import *
-from AnalisadorLexer import AnalisadorLexer
+from AnalisadorLALexer import AnalisadorLALexer
+from AnalisadorLAParser import AnalisadorLAParser
+from AnalisadorLALexerErrorListener import AnalisadorLALexerErrorListener
+from AnalisadorLAParserErrorListener import AnalisadorLAParserErrorListener
 
 # Código responsável por ler os tokens gerados pela analisador léxico e salvar em um arquivo
 def main(argv):
@@ -10,34 +13,42 @@ def main(argv):
     # Arquivo de saida
     output_stream = open(argv[2], 'w')
     # Gerando os tokens
-    lexer = AnalisadorLexer(input_stream)
+    lexer = AnalisadorLALexer(input_stream)
+    # Gerando o parser (Analisador sintático)
+    tokens = CommonTokenStream(lexer)
+    parser = AnalisadorLAParser(tokens)
 
-    # Leitura dos tokens e salvamento em arquivo
-    while True:
-    # Se for um erro léxico, imprime o lexema e a linha do erro, indicando 
-    # o erro encontrado, podendo ser comentário não fechado, cadeia literal 
-    # não fechada ou símbolo não identificado.
-    # Se for um SELF (Palavra-chave) imprime o lexema nos dois campos do token
-    # Se for outro token, imprime o lexema e o tipo do token.
-    # A condição de parada é o fim do arquivo (EOF).
-        
-        t = lexer.nextToken()
-        if t.type == Token.EOF:
-            break
-        elif AnalisadorLexer.symbolicNames[t.type] == "ERRO":
-            output_stream.write(f"Linha {t.line}: {t.text} - simbolo nao identificado\n")
-            break
-        elif AnalisadorLexer.symbolicNames[t.type] == "COMENTARIO_NAO_FECHADO":
-            output_stream.write(f"Linha {t.line}: comentario nao fechado\n")
-            break
-        elif AnalisadorLexer.symbolicNames[t.type] == "CADEIA_NAO_FECHADA":
-            output_stream.write(f"Linha {t.line}: cadeia literal nao fechada\n")
-            break
-        elif AnalisadorLexer.symbolicNames[t.type] == "SELF":
-            output_stream.write(f"<'{t.text}','{t.text}'>\n")
-        else:
-            output_stream.write(f"<'{t.text}',{AnalisadorLexer.symbolicNames[t.type]}>\n")
-        
+    # Tratamento de erros em python
+    # Alterando os tratadores padrões de erro para os que criamos
+    lexer.removeErrorListeners()
+    lexer.addErrorListener(AnalisadorLALexerErrorListener())
+
+    parser.removeErrorListeners()
+    parser.addErrorListener(AnalisadorLAParserErrorListener())
+
+    
+
+    try:
+        parser.programa()
+    except Exception as e:
+        output_stream.write(str(e))
+        output_stream.write("\nFim da compilacao\n")
+        # t = lexer.nextToken()
+        # if t.type == Token.EOF:
+        #     return
+        # elif AnalisadorLexer.symbolicNames[t.type] == "ERRO":
+        #     output_stream.write(f"Linha {t.line}: {t.text} - simbolo nao identificado\n")
+        #     return
+        # elif AnalisadorLexer.symbolicNames[t.type] == "COMENTARIO_NAO_FECHADO":
+        #     output_stream.write(f"Linha {t.line}: comentario nao fechado\n")
+        #     return
+        # elif AnalisadorLexer.symbolicNames[t.type] == "CADEIA_NAO_FECHADA":
+        #     output_stream.write(f"Linha {t.line}: cadeia literal nao fechada\n")
+        #     return
+        # elif AnalisadorLexer.symbolicNames[t.type] == "SELF":
+        #     output_stream.write(f"<'{t.text}','{t.text}'>\n")
+        # else:
+        #     output_stream.write(f"<'{t.text}',{AnalisadorLexer.symbolicNames[t.type]}>\n")
     output_stream.close()
     
  
