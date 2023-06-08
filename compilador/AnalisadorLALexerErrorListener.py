@@ -5,16 +5,17 @@ from antlr4.error.ErrorListener import ErrorListener
 # https://www.antlr.org/api/Java/org/antlr/v4/runtime/BaseErrorListener.html#syntaxError(org.antlr.v4.runtime.Recognizer,java.lang.Object,int,int,java.lang.String,org.antlr.v4.runtime.RecognitionException)
 class AnalisadorLALexerErrorListener(ErrorListener):
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-        # Analisa o tipo de erro e lança para LexorError.
-        # Através da variável "e" conseguimos recuperar o simbolo de entrada para analisar o erro (N SEI).
-        # https://www.antlr.org/api/Java/org/antlr/v4/runtime/RecognitionException.html
-        # https://www.antlr3.org/api/Python/classantlr3_1_1_recognition_exception.html
-        # https://www.antlr3.org/api/Python/antlr3_8py-source.html#l00224
-        # print("e = ", e)
-        # print("recognizer = ", recognizer)
-        # print("offendingSymbol = ", offendingSymbol)
-        # print("msg = ", msg)
-        # print("------------------  FIM  ------------------")
-        # N SEI FAZER
-        # talvez fazer um parse na variavel e para pegar o caractere e fazer uma comparacao
-        pass
+        # Analisa o tipo de erro e lança a excecao.
+        # OffendingSymbol não funciona para erros léxicos.
+        # Para resolver esse problema, verificamos o que cada parâmetro imprime na tela
+        # daí fizemos um split na string do parâmetro e para verificar o caractere que 
+        # acionou essa função. 
+
+        lex_Error = str(e).split("(")[1][1]
+
+        if lex_Error == '"':
+            raise Exception(f'Linha {line}: cadeia literal nao fechada')
+        elif lex_Error == '{':
+            raise Exception(f'Linha {line}: comentario nao fechado')
+        else:
+            raise Exception(f'Linha {line}: {lex_Error} - simbolo nao identificado')

@@ -26,29 +26,14 @@ def main(argv):
     parser.removeErrorListeners()
     parser.addErrorListener(AnalisadorLAParserErrorListener())
 
-    
-
     try:
+        # Executa o parser para análise sintática
         parser.programa()
     except Exception as e:
+        # Deteccao de erro sintatico e lexico
+        # gracas aos listeners que implementamos
         output_stream.write(str(e))
         output_stream.write("\nFim da compilacao\n")
-        # t = lexer.nextToken()
-        # if t.type == Token.EOF:
-        #     return
-        # elif AnalisadorLexer.symbolicNames[t.type] == "ERRO":
-        #     output_stream.write(f"Linha {t.line}: {t.text} - simbolo nao identificado\n")
-        #     return
-        # elif AnalisadorLexer.symbolicNames[t.type] == "COMENTARIO_NAO_FECHADO":
-        #     output_stream.write(f"Linha {t.line}: comentario nao fechado\n")
-        #     return
-        # elif AnalisadorLexer.symbolicNames[t.type] == "CADEIA_NAO_FECHADA":
-        #     output_stream.write(f"Linha {t.line}: cadeia literal nao fechada\n")
-        #     return
-        # elif AnalisadorLexer.symbolicNames[t.type] == "SELF":
-        #     output_stream.write(f"<'{t.text}','{t.text}'>\n")
-        # else:
-        #     output_stream.write(f"<'{t.text}',{AnalisadorLexer.symbolicNames[t.type]}>\n")
     output_stream.close()
     
  

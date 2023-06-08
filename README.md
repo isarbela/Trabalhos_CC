@@ -1,6 +1,6 @@
-# Trabalho 1 - Construção de Compiladores
+# Trabalho - Construção de Compiladores
 
-Repositório dedicado ao desenvolvimento dos trabalhos da disciplina de Construção de Compiladores.
+Repositório dedicado ao desenvolvimento dos trabalhos da disciplina de Construção de Compiladores ministrada pelo professor Lucrédio no semestre 2023/1.
 
 ## Feito pelos alunos:
  - Gabriel Penajo Machado. RA: 769712
@@ -15,12 +15,12 @@ Repositório dedicado ao desenvolvimento dos trabalhos da disciplina de Constru�
 
 1. Para executar o arquivo g4, rodar o comando a partir da pasta onde está localizado o Antlr
  ```
- java -jar antlr-4.13.0-complete.jar -Dlanguage=Python3 T1_CC/compilador/AnalisadorLexer.g4
+ java -jar antlr-4.13.0-complete.jar -Dlanguage=Python3 T1_CC/compilador/AnalisadorLA.g4
  ```
  
-2. Para rodar o corretor "automágico" no sistema operacional Linux, executar o comando abaixo substituindo **CAMINHO1** pelo caminho do arquivo jar de correção na sua máquina e **CAMINHO2** pelo caminho desse projeto no seu computador
+2. Para rodar o corretor "automágico" no sistema operacional Linux, executar o comando abaixo substituindo **CAMINHO1** pelo caminho do arquivo jar de correção na sua máquina, **CAMINHO2** pelo caminho desse projeto no seu computador e **CAMINHO3** o *path* dos casos de teste disponibilizados pelo professor..
  ```
- java -jar /home/CAMINHO1/compiladores-corretor-automatico-1.0-SNAPSHOT-jar-with-dependencies.jar "python /home/CAMINHO2/T1_CC/compilador/Main.py" gcc /home/CAMINHO2/T1_CC/temp/ /home/CAMINHO2/T1_CC/casos-de-teste/ "769712 769755 769783" t1 
+ java -jar /home/CAMINHO1/compiladores-corretor-automatico-1.0-SNAPSHOT-jar-with-dependencies.jar "python /home/CAMINHO2/T1_CC/compilador/Main.py" gcc /home/CAMINHO2/T1_CC/temp/ /home/CAMINHO3/casos-de-teste/ "769712 769755 769783" t1 
  ```
  
  ## Compilar e executar casos de teste um a um
