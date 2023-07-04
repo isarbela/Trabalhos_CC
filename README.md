@@ -36,3 +36,7 @@ Para compilar e executar todos os casos de teste, rodar o comando abaixo na past
   ```
   python run.py argv1
   ```
+
+## T1
+
+Como o T1 funciona diferente dos demais projetos, ele se encontra nesta outra branch [T1](https://github.com/isarbela/Trabalhos_CC/tree/trabalho1)
