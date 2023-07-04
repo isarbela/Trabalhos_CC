@@ -1,4 +1,4 @@
-# Generated from compilador/AnalisadorLA.g4 by ANTLR 4.13.0
+# Generated from ../T1_CC/compilador/AnalisadorLA.g4 by ANTLR 4.13.0
 from antlr4 import *
 if "." in __name__:
     from .AnalisadorLAParser import AnalisadorLAParser
