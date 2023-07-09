@@ -30,16 +30,16 @@ class LASemantico(AnalisadorLAVisitor) :
                 LASemanticoUtils.adicionarErroSemantico(token=ctx.start,
                     mensagem=f'constante {ctx.IDENT().getText()} ja declarado anteriormente')
             else:
-                tipo = Tipo.INTEIRO
-                tipo_basico = ctx.tipo_basico().getText()
-                if tipo_basico == 'literal':
-                    tipo = Tipo.LITERAL
-                elif tipo_basico == 'real':
-                    tipo = Tipo.REAL
-                elif tipo == 'logico':
+                tipo = Tipo.NUM_INT
+                tipo_const = escopoAtual.verificar(ctx.valor_constante.getText())
+                if tipo_const == 'literal':
+                    tipo = Tipo.CADEIA
+                elif tipo_const == 'real':
+                    tipo = Tipo.NUM_REAL
+                elif tipo_const == 'logico':
                     tipo = Tipo.LOGICO
-                elif tipo_basico == 'inteiro':
-                    tipo = Tipo.INTEIRO
+                elif tipo_const == 'inteiro':
+                    tipo = Tipo.NUM_INT
                 escopoAtual.adicionar(ctx.IDENT().getText(), tipo)
 
         return super().visitDeclaracao_const(ctx)
@@ -59,21 +59,20 @@ class LASemantico(AnalisadorLAVisitor) :
 
         for escopoAtual in escopos:
             for identificador in ctx.variavel().identificador():
-                print('\n\n\n\n\n\n\n\n', escopoAtual)
                 if escopoAtual.existe(identificador.getText()):
                     LASemanticoUtils.adicionarErroSemantico(identificador.start,
                         f'identificador {identificador.getText()} ja declarado anteriormente')
                 else:
-                    tipo = Tipo.INTEIRO
-                    tipo_basico = ctx.tipo_basico().getText()
-                    if tipo_basico == 'literal':
-                        tipo = Tipo.LITERAL
-                    elif tipo_basico == 'real':
-                        tipo = Tipo.REAL
+                    tipo = Tipo.INVALIDO
+                    tipo_variavel = ctx.variavel().tipo().getText()
+                    if tipo_variavel == 'literal':
+                        tipo = Tipo.CADEIA
+                    elif tipo_variavel == 'real':
+                        tipo = Tipo.NUM_REAL
                     elif tipo == 'logico':
                         tipo = Tipo.LOGICO
-                    elif tipo_basico == 'inteiro':
-                        tipo = Tipo.INTEIRO
+                    elif tipo_variavel == 'inteiro':
+                        tipo = Tipo.NUM_INT
                     escopoAtual.adicionar(identificador.getText(), tipo)
         return super().visitDeclaracao_var(ctx)
     
@@ -91,22 +90,28 @@ class LASemantico(AnalisadorLAVisitor) :
     def visitIdentificador(self, ctx: AnalisadorLAParser.IdentificadorContext):
         if ctx.IDENT() != None:
             for escopo in self.escoposAninhados.percorrerEscoposAninhados():
-                if not escopo.existe(ctx.IDENT().getText()):
-                    LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {ctx.IDENT().getText()} não declarado')
+                if not escopo.existe(ctx.IDENT(0).getText()):
+                    LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {ctx.IDENT(0).getText()} não declarado')
                 break
         return super().visitIdentificador(ctx)
 
     def visitCmdAtribuicao(self, ctx: AnalisadorLAParser.CmdAtribuicaoContext):
-        tipoExpressao = LASemanticoUtils.verificarTipoExpr(ctx=ctx.expressao())
+        print(f"\n\n\n\n\n\n{ctx.identificador().getText()}")
+        escopos = self.escoposAninhados.percorrerEscoposAninhados()
+        tipoExpressao = Tipo.INVALIDO
+        for escopo in escopos:
+            if escopo != None:
+                tipoExpressao = LASemanticoUtils.verificarTipoExpr(escopo, ctx=ctx.expressao())
+        
         error = False
         nomeVar = ctx.identificador().getText()
-        if tipoExpressao != TabelaDeSimbolos.TipoLA.INVALIDO:
-            for escopo in LASemantico.escopos.obterPilha():
+        if tipoExpressao != Tipo.INVALIDO:
+            for escopo in self.escoposAninhados.obterPilha():
                 if escopo.existe(nomeVar):
-                    tipoVar = LASemanticoUtils.verificarTipoNomeVar(escopos=LASemantico.escopos, nomeVar=nomeVar)
-                    varNumeric = tipoVar == TabelaDeSimbolos.TipoLA.INTEIRO or tipoVar == TabelaDeSimbolos.TipoLA.REAL
-                    expNumeric = tipoExpressao == TabelaDeSimbolos.TipoLA.INTEIRO or tipoExpressao == TabelaDeSimbolos.TipoLA.REAL
-                    if not (varNumeric and expNumeric) and tipoVar != tipoExpressao and tipoExpressao != TabelaDeSimbolos.TipoLA.INVALIDO:
+                    tipoVar = LASemanticoUtils.verificarTipoNomeVar(self.escoposAninhados, nomeVar=nomeVar)
+                    varNumeric = tipoVar == Tipo.NUM_INT or tipoVar == Tipo.NUM_REAL
+                    expNumeric = tipoExpressao == Tipo.NUM_INT or tipoExpressao == Tipo.NUM_REAL
+                    if not (varNumeric and expNumeric) and tipoVar != tipoExpressao and tipoExpressao != Tipo.INVALIDO:
                         error = True
         else:
             error = True

@@ -7,14 +7,14 @@ class LASemanticoUtils:
     
     @staticmethod
     def adicionarErroSemantico(token, mensagem: str):
-        linha: int = token.getLine()
-        LASemanticoUtils.errosSemanticos.add(f"Erro {linha}: {mensagem}")
+        linha: int = token.line
+        LASemanticoUtils.errosSemanticos.append(f"Erro {linha}: {mensagem}")
     
     @staticmethod
-    def verificarTipoExpr(tabela: TabelaDeSimbolos, escopos: Escopos, ctx: LAParser.ExpressaoContext) -> Tipo:
+    def verificarTipoExpr(tabela: TabelaDeSimbolos, ctx: LAParser.ExpressaoContext) -> Tipo:
         ret: Tipo = None
-        for ta in ctx.termoAritmetico():
-            aux: Tipo = LASemanticoUtils.verificarTipo(tabela, ta)
+        for ta in ctx.termo_logico():
+            aux: Tipo = LASemanticoUtils.verificarTipoTerm(tabela, ta)
             if ret == None:
                 ret = aux
             elif ret != aux and aux != Tipo.INVALIDO:
@@ -25,7 +25,7 @@ class LASemanticoUtils:
     @staticmethod
     def verificarTipoTerm(tabela: TabelaDeSimbolos, ctx: LAParser.TermoContext) -> Tipo:
         ret: Tipo = None
-        for fa in ctx.fatorAritmetico():
+        for fa in ctx.fator():
             aux: Tipo = LASemanticoUtils.verificarTipo(tabela, fa)
             if ret == None:
                 ret = aux

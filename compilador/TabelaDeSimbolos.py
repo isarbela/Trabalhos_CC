@@ -7,6 +7,7 @@ class Tipo(Enum):
     CADEIA  = "cadeia"
     INVALIDO = "invalido"
     TIPO = "tipo"
+    LOGICO = "logico"
 
 class TabelaDeSimbolos():
     def __init__(self):
@@ -18,14 +19,11 @@ class TabelaDeSimbolos():
             self.tipo =  tipo
     
     def adicionar(self, nome : str, tipo: Tipo):
-        self.tabela[nome] = tipo
-    
+        self.tabela[nome] = tipo    
     
     def existe(self, nome: str) -> bool:
-        print('\nVAI CORINTIA\nVAI CORINTIA\nVAI CORINTIA\nVAI CORINTIA\nVAI CORINTIA\nVAI CORINTIA\n', self.tabela)
         return self.tabela.get(nome) != None
     
     
     def verificar(self, nome : str):
         return self.tabela.get(nome).tipo
- 
