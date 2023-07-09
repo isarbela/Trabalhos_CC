@@ -99,7 +99,7 @@ class LASemantico(AnalisadorLAVisitor) :
         if ctx.IDENT() != None:
             for escopo in self.escoposAninhados.percorrerEscoposAninhados():
                 if not escopo.existe(ctx.IDENT(0).getText()):
-                    LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {ctx.IDENT(0).getText()} não declarado')
+                    LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {ctx.IDENT(0).getText()} nao declarado')
                 break
         return super().visitIdentificador(ctx)
 

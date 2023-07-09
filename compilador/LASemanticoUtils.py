@@ -23,7 +23,7 @@ class LASemanticoUtils:
                 ret = aux
             # O erro é acusado quando a flag inválido no tipo se mantém.
             elif (ret != aux and not auxCompativel) and aux != Tipo.INVALIDO:
-                LASemanticoUtils.adicionarErroSemantico(ctx.start, "Expressão " + ctx.getText() + " contém tipos incompatíveis")
+                LASemanticoUtils.adicionarErroSemantico(ctx.start, "Expressao " + ctx.getText() + " contem tipos incompativeis")
                 ret = Tipo.INVALIDO
         return ret
 
@@ -38,7 +38,7 @@ class LASemanticoUtils:
                 ret = aux
             # O erro é acusado quando a flag inválido no tipo se mantém.
             elif (ret != aux and not auxCompativel) and aux != Tipo.INVALIDO:
-                LASemanticoUtils.adicionarErroSemantico(ctx.start, "5Termo " + ctx.getText() + " contém tipos incompatíveis")
+                LASemanticoUtils.adicionarErroSemantico(ctx.start, "Termo " + ctx.getText() + " contem tipos incompativeis")
                 ret = Tipo.INVALIDO
         return ret
     
@@ -67,7 +67,7 @@ class LASemanticoUtils:
                 if ret == None:
                     ret = aux
                 elif (ret != aux and not auxCompativel) and aux != Tipo.INVALIDO:
-                    LASemanticoUtils.adicionarErroSemantico(ctx.start, "4Termo " + ctx.getText() + " contém tipos incompatíveis")
+                    LASemanticoUtils.adicionarErroSemantico(ctx.start, "Termo " + ctx.getText() + " contem tipos incompativeis")
                     ret = Tipo.INVALIDO
             if ret != Tipo.INVALIDO:
                 ret = Tipo.LOGICO
@@ -97,7 +97,7 @@ class LASemanticoUtils:
             if ret == None:
                 ret = aux
             elif (ret != aux and not auxCompativel) and aux != Tipo.INVALIDO:
-                LASemanticoUtils.adicionarErroSemantico(ctx.start, "2Termo " + ctx.getText() + " contém tipos incompatíveis")
+                LASemanticoUtils.adicionarErroSemantico(ctx.start, "Termo " + ctx.getText() + " contem tipos incompativeis")
                 ret = Tipo.INVALIDO
         return ret
 
@@ -110,7 +110,7 @@ class LASemanticoUtils:
             if ret == None:
                 ret = aux
             elif (ret != aux and not auxCompativel) and aux != Tipo.INVALIDO:
-                LASemanticoUtils.adicionarErroSemantico(ctx.start, "1Termo " + ctx.getText() + " contém tipos incompatíveis")
+                LASemanticoUtils.adicionarErroSemantico(ctx.start, "Termo " + ctx.getText() + " contem tipos incompativeis")
                 ret = Tipo.INVALIDO
         return ret
     
