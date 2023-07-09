@@ -15,7 +15,7 @@ Repositório dedicado ao desenvolvimento dos trabalhos da disciplina de Constru�
 
 1. Para executar o arquivo g4, rodar o comando a partir da pasta onde está localizado o Antlr
  ```
- java -jar antlr-4.13.0-complete.jar -Dlanguage=Python3 T1_CC/compilador/AnalisadorLA.g4
+ java -jar antlr-4.13.0-complete.jar -Dlanguage=Python3 -visitor T1_CC/compilador/AnalisadorLA.g4
  ```
  
 2. Para rodar o corretor "automágico" no sistema operacional Linux, executar o comando abaixo substituindo **CAMINHO1** pelo caminho do arquivo jar de correção na sua máquina, **CAMINHO2** pelo caminho desse projeto no seu computador e **CAMINHO3** o *path* dos casos de teste disponibilizados pelo professor..
