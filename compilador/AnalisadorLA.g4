@@ -37,9 +37,10 @@ WS  :   ( ' '
 // Com algumas modificações para melhorar a leitura e evitar regras desnecessárias.
 programa: declaracoes 'algoritmo' corpo 'fim_algoritmo';
 declaracoes: (declaracao_local | declaracao_global)*;
-declaracao_local: 'declare' variavel
-    | 'constante' IDENT ':' tipo_basico '=' valor_constante
-    | 'tipo' IDENT ':' tipo;
+declaracao_local: (declaracao_var | declaracao_const | declaracao_tipo);
+declaracao_var: 'declare' variavel;
+declaracao_const: 'constante' IDENT ':' tipo_basico '=' valor_constante;
+declaracao_tipo: 'tipo' IDENT ':' tipo;
 variavel: identificador (',' identificador)* ':' tipo;
 identificador: IDENT ('.' IDENT)* dimensao;
 dimensao: ('[' exp_aritmetica ']')*;

@@ -1,4 +1,4 @@
-# Generated from ../T1_CC/compilador/AnalisadorLA.g4 by ANTLR 4.13.0
+# Generated from T1_CC/compilador/AnalisadorLA.g4 by ANTLR 4.13.0
 from antlr4 import *
 if "." in __name__:
     from .AnalisadorLAParser import AnalisadorLAParser
@@ -32,6 +32,33 @@ class AnalisadorLAListener(ParseTreeListener):
 
     # Exit a parse tree produced by AnalisadorLAParser#declaracao_local.
     def exitDeclaracao_local(self, ctx:AnalisadorLAParser.Declaracao_localContext):
+        pass
+
+
+    # Enter a parse tree produced by AnalisadorLAParser#declaracao_var.
+    def enterDeclaracao_var(self, ctx:AnalisadorLAParser.Declaracao_varContext):
+        pass
+
+    # Exit a parse tree produced by AnalisadorLAParser#declaracao_var.
+    def exitDeclaracao_var(self, ctx:AnalisadorLAParser.Declaracao_varContext):
+        pass
+
+
+    # Enter a parse tree produced by AnalisadorLAParser#declaracao_const.
+    def enterDeclaracao_const(self, ctx:AnalisadorLAParser.Declaracao_constContext):
+        pass
+
+    # Exit a parse tree produced by AnalisadorLAParser#declaracao_const.
+    def exitDeclaracao_const(self, ctx:AnalisadorLAParser.Declaracao_constContext):
+        pass
+
+
+    # Enter a parse tree produced by AnalisadorLAParser#declaracao_tipo.
+    def enterDeclaracao_tipo(self, ctx:AnalisadorLAParser.Declaracao_tipoContext):
+        pass
+
+    # Exit a parse tree produced by AnalisadorLAParser#declaracao_tipo.
+    def exitDeclaracao_tipo(self, ctx:AnalisadorLAParser.Declaracao_tipoContext):
         pass
 
 

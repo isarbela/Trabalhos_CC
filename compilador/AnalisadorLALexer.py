@@ -1,4 +1,4 @@
-# Generated from ../T1_CC/compilador/AnalisadorLA.g4 by ANTLR 4.13.0
+# Generated from T1_CC/compilador/AnalisadorLA.g4 by ANTLR 4.13.0
 from antlr4 import *
 from io import StringIO
 import sys
