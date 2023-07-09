@@ -26,4 +26,4 @@ class TabelaDeSimbolos():
     
     
     def verificar(self, nome : str):
-        return self.tabela.get(nome).tipo
+        return self.tabela.get(nome)

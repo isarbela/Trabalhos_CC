@@ -4,14 +4,17 @@ from TabelaDeSimbolos import TabelaDeSimbolos, Tipo
 from LASemanticoUtils import LASemanticoUtils
 from AnalisadorLAParser import AnalisadorLAParser
 
-
+# Análise semântica do compilador
+# implementamos algumas funções da classe visitor gerada pelo antlr.
 class LASemantico(AnalisadorLAVisitor) :
 
     escoposAninhados : Escopos = Escopos()
 
+    # Começo da árvore gerada pela análise sintática
     def visitPrograma(self, ctx:AnalisadorLAParser.ProgramaContext):
         return super().visitPrograma(ctx)
 
+    # Os algoritmos da linguagem LA apresentam declaração global e local
     def visitDeclaracao_global(self, ctx:AnalisadorLAParser.Declaracao_globalContext):
         nomeVar = ctx.IDENT().getText()
         strTipoVar = ctx.tipo().getText()
@@ -24,6 +27,8 @@ class LASemantico(AnalisadorLAVisitor) :
 
         return super().visitDeclaracao_global(ctx)
 
+    # A declaração local nos dividimos em outras regras na gramática para ficar mais organizado e fácil de implementar
+    # Temos as declarações constantes.
     def visitDeclaracao_const(self, ctx: AnalisadorLAParser.Declaracao_constContext):
         for escopoAtual in self.escoposAninhados.percorrerEscoposAninhados():
             if escopoAtual.existe(ctx.IDENT().getText()):
@@ -44,6 +49,7 @@ class LASemantico(AnalisadorLAVisitor) :
 
         return super().visitDeclaracao_const(ctx)
 
+    # Os tipos.
     def visitDeclaracao_tipo(self, ctx: AnalisadorLAParser.Declaracao_tipoContext):
         escopoAtual = self.escoposAninhados.obterEscopoAtual()
         
@@ -54,6 +60,7 @@ class LASemantico(AnalisadorLAVisitor) :
             escopoAtual.adicionar(ctx.IDENT().getText(), Tipo.TIPO)
         return super().visitDeclaracao_tipo(ctx)
     
+    # As variáveis. 
     def visitDeclaracao_var(self, ctx: AnalisadorLAParser.Declaracao_varContext):
         escopos = self.escoposAninhados.percorrerEscoposAninhados()
 
@@ -69,13 +76,14 @@ class LASemantico(AnalisadorLAVisitor) :
                         tipo = Tipo.CADEIA
                     elif tipo_variavel == 'real':
                         tipo = Tipo.NUM_REAL
-                    elif tipo == 'logico':
+                    elif tipo_variavel == 'logico':
                         tipo = Tipo.LOGICO
                     elif tipo_variavel == 'inteiro':
                         tipo = Tipo.NUM_INT
                     escopoAtual.adicionar(identificador.getText(), tipo)
         return super().visitDeclaracao_var(ctx)
     
+    # Para analisar a tipagem, visitamos as regras de tipo básico dos identificadores (variáveis da linguagem)
     def visitTipo_basico_ident(self, ctx: AnalisadorLAParser.Tipo_basico_identContext):
         # Verifica se a variável existe em cada escopo
         # Devolve erro para o primeiro escopo que não existir.
@@ -95,10 +103,10 @@ class LASemantico(AnalisadorLAVisitor) :
                 break
         return super().visitIdentificador(ctx)
 
+    # Visitamos a atribuição para acusar erros de tipos incompatíveis
     def visitCmdAtribuicao(self, ctx: AnalisadorLAParser.CmdAtribuicaoContext):
-        print(f"\n\n\n\n\n\n{ctx.identificador().getText()}")
         escopos = self.escoposAninhados.percorrerEscoposAninhados()
-        tipoExpressao = Tipo.INVALIDO
+        tipoExpressao = Tipo.NUM_INT
         for escopo in escopos:
             if escopo != None:
                 tipoExpressao = LASemanticoUtils.verificarTipoExpr(escopo, ctx=ctx.expressao())
@@ -106,9 +114,9 @@ class LASemantico(AnalisadorLAVisitor) :
         error = False
         nomeVar = ctx.identificador().getText()
         if tipoExpressao != Tipo.INVALIDO:
-            for escopo in self.escoposAninhados.obterPilha():
+            for escopo in self.escoposAninhados.percorrerEscoposAninhados():
                 if escopo.existe(nomeVar):
-                    tipoVar = LASemanticoUtils.verificarTipoNomeVar(self.escoposAninhados, nomeVar=nomeVar)
+                    tipoVar = LASemanticoUtils.verificarTipo(escopo, nomeVar)
                     varNumeric = tipoVar == Tipo.NUM_INT or tipoVar == Tipo.NUM_REAL
                     expNumeric = tipoExpressao == Tipo.NUM_INT or tipoExpressao == Tipo.NUM_REAL
                     if not (varNumeric and expNumeric) and tipoVar != tipoExpressao and tipoExpressao != Tipo.INVALIDO:
