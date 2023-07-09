@@ -29,19 +29,19 @@ def main(argv):
     parser.addErrorListener(AnalisadorLAParserErrorListener())
 
     
-    # try:
+    try:
         # Executa o parser para análise sintática
-    laSemantico = LASemantico()
+        laSemantico = LASemantico()
 
-    laSemantico.visitPrograma(parser.programa())
-    for erro in LASemanticoUtils.errosSemanticos:
-        output_stream.write(erro + "\n")
-    output_stream.write("Fim da compilacao\n")
-    # except Exception as e:
-    #     # Deteccao de erro sintatico e lexico
-    #     # gracas aos listeners que implementamos
-    #     output_stream.write(str(e))
-    #     output_stream.write("\nFim da compilacao\n")
+        laSemantico.visitPrograma(parser.programa())
+        for erro in LASemanticoUtils.errosSemanticos:
+            output_stream.write(erro + "\n")
+        output_stream.write("Fim da compilacao\n")
+    except Exception as e:
+        # Deteccao de erro sintatico e lexico
+        # gracas aos listeners que implementamos
+        output_stream.write(str(e))
+        output_stream.write("\nFim da compilacao\n")
     output_stream.close()
     
  
