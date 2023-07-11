@@ -8,6 +8,9 @@ class Tipo(Enum):
     INVALIDO = "invalido"
     TIPO = "tipo"
     LOGICO = "logico"
+    PONTEIRO = "ponteiro"
+    REGISTRO = "registro"
+    VOID = "void"
 
 class TabelaDeSimbolos():
     def __init__(self):

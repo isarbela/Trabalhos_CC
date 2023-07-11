@@ -1,7 +1,7 @@
 from AnalisadorLAVisitor import AnalisadorLAVisitor
 from Escopos import Escopos
 from TabelaDeSimbolos import TabelaDeSimbolos, Tipo
-from LASemanticoUtils import LASemanticoUtils
+from LASemanticoUtils import LASemanticoUtils, debug
 from AnalisadorLAParser import AnalisadorLAParser
 
 # Análise semântica do compilador
@@ -72,13 +72,13 @@ class LASemantico(AnalisadorLAVisitor) :
                 else:
                     tipo = Tipo.INVALIDO
                     tipo_variavel = ctx.variavel().tipo().getText()
-                    if tipo_variavel == 'literal':
+                    if tipo_variavel == 'literal' or tipo_variavel == '^literal':
                         tipo = Tipo.CADEIA
-                    elif tipo_variavel == 'real':
+                    elif tipo_variavel == 'real' or tipo_variavel == '^real':
                         tipo = Tipo.NUM_REAL
-                    elif tipo_variavel == 'logico':
+                    elif tipo_variavel == 'logico' or tipo_variavel == '^logico':
                         tipo = Tipo.LOGICO
-                    elif tipo_variavel == 'inteiro':
+                    elif tipo_variavel == 'inteiro' or tipo_variavel == '^inteiro':
                         tipo = Tipo.NUM_INT
                     escopoAtual.adicionar(identificador.getText(), tipo)
         return super().visitDeclaracao_var(ctx)
@@ -112,11 +112,15 @@ class LASemantico(AnalisadorLAVisitor) :
                 tipoExpressao = LASemanticoUtils.verificarTipoExpr(escopo, ctx=ctx.expressao())
         
         error = False
+        pointer_prefix = "^" if ctx.getText()[0] == "^" else ""
         nomeVar = ctx.identificador().getText()
+        debug(ctx.getText(), tipoExpressao)
         if tipoExpressao != Tipo.INVALIDO:
             for escopo in self.escoposAninhados.percorrerEscoposAninhados():
                 if escopo.existe(nomeVar):
                     tipoVar = LASemanticoUtils.verificarTipo(escopo, nomeVar)
+                    print(ctx.getText(), f"{tipoVar}")
+                    
                     varNumeric = tipoVar == Tipo.NUM_INT or tipoVar == Tipo.NUM_REAL
                     expNumeric = tipoExpressao == Tipo.NUM_INT or tipoExpressao == Tipo.NUM_REAL
                     if not (varNumeric and expNumeric) and tipoVar != tipoExpressao and tipoExpressao != Tipo.INVALIDO:
@@ -125,7 +129,7 @@ class LASemantico(AnalisadorLAVisitor) :
             error = True
 
         if error:
-            LASemanticoUtils.adicionarErroSemantico(ctx.identificador().start, f'atribuicao nao compativel para {nomeVar}')
+            LASemanticoUtils.adicionarErroSemantico(ctx.identificador().start, f'atribuicao nao compativel para {pointer_prefix}{nomeVar}')
             
         return super().visitCmdAtribuicao(ctx)
     

@@ -2,6 +2,10 @@ from AnalisadorLAParser import AnalisadorLAParser as LAParser
 from TabelaDeSimbolos import TabelaDeSimbolos, Tipo
 from Escopos import Escopos
 
+def debug(string: str, msg_prefix):
+    if string.find('&') != -1:
+        print(f'{msg_prefix}: {string}')
+
 # Classe responsável por verificação de erros, avaliamos, recursivamente, os principais componentes da gramática LA.
 class LASemanticoUtils:
     errosSemanticos: list[str] = []
@@ -16,8 +20,11 @@ class LASemanticoUtils:
     def verificarTipoExpr(tabela: TabelaDeSimbolos, ctx: LAParser.ExpressaoContext) -> Tipo:
         ret: Tipo = None
         # Esta, é formada por termo lógico, então vamos analisar seus termos.
+        
+        debug(ctx.getText(), "tipo expr")
         for ta in ctx.termo_logico():
             aux: Tipo = LASemanticoUtils.verificarTipoTermoLogico(tabela, ta)
+            print(f"[verificarTipoExpr] {ctx.getText()} é do tipo {aux}")
             auxCompativel = (aux == Tipo.NUM_INT or aux == Tipo.NUM_REAL) and (ret == Tipo.NUM_INT or ret == Tipo.NUM_REAL)
             if ret == None:
                 ret = aux
@@ -33,6 +40,7 @@ class LASemanticoUtils:
         ret: Tipo = None
         for fa in ctx.fator_logico():
             aux: Tipo = LASemanticoUtils.verificarFatorLogico(tabela, fa)
+            print(f"[verificarTipoTermoLogico] {ctx.getText()} é do tipo {aux}")
             auxCompativel = (aux == Tipo.NUM_INT or aux == Tipo.NUM_REAL) and (ret == Tipo.NUM_INT or ret == Tipo.NUM_REAL)
             if ret == None:
                 ret = aux
@@ -51,6 +59,7 @@ class LASemanticoUtils:
     def verificarParcelaLogica(tabela: TabelaDeSimbolos, ctx: LAParser.Parcela_logicaContext) -> Tipo:
         if ctx.exp_relacional() != None:
             ret = LASemanticoUtils.verificarExprRelacional(tabela, ctx.exp_relacional())
+            print(f"[verificarParcelaLogica] {ctx.getText()} é do tipo {ret}")
         else:
             ret = Tipo.LOGICO
         return ret
@@ -73,6 +82,7 @@ class LASemanticoUtils:
                 ret = Tipo.LOGICO
         else:
             ret = LASemanticoUtils.verificarExprAritmetica(tabela, ctx.exp_aritmetica(0))
+        print(f"[verificarExprRelacional] {ctx.getText()} é do tipo {ret}")
         return ret
     
     # Daí, seguimos a mesma linha de raciocínio para as relações aritméticas.
@@ -81,6 +91,7 @@ class LASemanticoUtils:
         ret: Tipo = None
         for fa in ctx.termo():
             aux: Tipo = LASemanticoUtils.verificarTipoTerm(tabela, fa)
+            print(f"[verificarExprAritmetica] {ctx.getText()} é do tipo {aux}")
             auxCompativel = (aux == Tipo.NUM_INT or aux == Tipo.NUM_REAL) and (ret == Tipo.NUM_INT or ret == Tipo.NUM_REAL)
             if ret == None:
                 ret = aux
@@ -93,6 +104,7 @@ class LASemanticoUtils:
         ret: Tipo = None
         for fa in ctx.fator():
             aux: Tipo = LASemanticoUtils.verificarTipoFat(tabela, fa)
+            print(f"[verificarTipoTerm] {ctx.getText()} é do tipo {aux}")
             auxCompativel = (aux == Tipo.NUM_INT or aux == Tipo.NUM_REAL) and (ret == Tipo.NUM_INT or ret == Tipo.NUM_REAL)
             if ret == None:
                 ret = aux
@@ -120,8 +132,10 @@ class LASemanticoUtils:
         
         # As parcelas aritméticas podem ser unárias ou não unárias, portanto precisamos verificá-las.
         if ctx.parcela_nao_unario() != None:
+            debug(ctx.getText(), "parcela nao unaria")
             ret = LASemanticoUtils.verificarTipoParcelaNaoUnario(tabela, ctx.parcela_nao_unario())
         else:
+            debug(ctx.getText(), "parcela unaria")
             ret = LASemanticoUtils.verificarTipoParcelaUnario(tabela, ctx.parcela_unario())
         return ret
     
@@ -129,7 +143,8 @@ class LASemanticoUtils:
     @staticmethod
     def verificarTipoParcelaNaoUnario(tabela: TabelaDeSimbolos, ctx: LAParser.Parcela_nao_unarioContext) -> Tipo:
         if ctx.identificador() != None:
-            return LASemanticoUtils.verificarTipoIdentificador(tabela, ctx.identificador)
+            debug(ctx.getText(), "ident")
+            return LASemanticoUtils.verificarTipoIdentificador(tabela, ctx.identificador())
         return Tipo.CADEIA
     
     # 
@@ -137,14 +152,15 @@ class LASemanticoUtils:
     def verificarTipoIdentificador(tabela: TabelaDeSimbolos, ctx: LAParser.IdentificadorContext) -> Tipo:
         nomeVar = ""
         ret = Tipo.INVALIDO
-        for ident in ctx.IDENT():
-            nomeVar += ident.getText()
+        for i in range(len(ctx.IDENT())):
+            nomeVar += ctx.IDENT(i).getText()
             # if necessário por conta do funcionamento do identificador na gramática
             # é colocado . antes de outros ident com excessão da última posição, que deve ser a dimensão.
-            if nomeVar != ctx.IDENT(len(ctx.IDENT()) - 1):
+            if i != len(ctx.IDENT()) - 1:
                 nomeVar += "."
         if tabela.existe(nomeVar):
             ret = LASemanticoUtils.verificarTipo(tabela, nomeVar)
+        print(f"[verificarTipoIdentificador] {ctx.getText()} (vulgo {nomeVar}) é do tipo {ret}")
         return ret
     
     # Verificamos o tipo da parcela unária
@@ -168,5 +184,6 @@ class LASemanticoUtils:
     # Verifica se o tipo existe na tabela de símbolos
     @staticmethod
     def verificarTipo(tabela: TabelaDeSimbolos, nomeVar: str) -> Tipo:
+        print(f"[verificarTipo] {nomeVar} é do tipo {tabela.verificar(nomeVar)}")
         return tabela.verificar(nomeVar)
     
