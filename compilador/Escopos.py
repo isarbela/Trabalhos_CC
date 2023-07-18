@@ -1,17 +1,17 @@
 
 from collections import deque
-from TabelaDeSimbolos import TabelaDeSimbolos
+from TabelaDeSimbolos import TabelaDeSimbolos, Tipo
 
 class Escopos():
-    def __init__ (self):
+    def __init__ (self, tipo: Tipo):
         self.pilhaDeTabelas: deque[TabelaDeSimbolos] = deque()
-        self.criarNovoEscopo()
+        self.criarNovoEscopo(tipo)
 
-    def criarNovoEscopo(self):
-        self.pilhaDeTabelas.append(TabelaDeSimbolos())
+    def criarNovoEscopo(self, tipo: Tipo):
+        self.pilhaDeTabelas.append(TabelaDeSimbolos(tipo))
 
     def obterEscopoAtual(self) -> TabelaDeSimbolos:
-        self.pilhaDeTabelas[-1]
+        return self.pilhaDeTabelas[-1]
 
     def abandonarEscopo(self):
         self.pilhaDeTabelas.pop()
