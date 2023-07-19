@@ -3,6 +3,7 @@ from Escopos import Escopos
 from TabelaDeSimbolos import TabelaDeSimbolos, Tipo, Estrutura
 from LASemanticoUtils import LASemanticoUtils, debug
 from AnalisadorLAParser import AnalisadorLAParser
+# from compilador.AnalisadorLAParser import AnalisadorLAParser
 
 # Análise semântica do compilador
 # implementamos algumas funções da classe visitor gerada pelo antlr.
@@ -27,6 +28,7 @@ class LASemantico(AnalisadorLAVisitor) :
             if ctx.getText().startswith("funcao"):
                 tipoRetornoFuncao = LASemanticoUtils.getTipo(ctx.tipo_estendido().getText())
                 escopoAtual.adicionar(ctx.IDENT().getText(), tipoRetornoFuncao, Estrutura.FUNCAO)
+                print(tipoRetornoFuncao)
             else:
                 tipoRetornoFuncao = Tipo.VOID
                 escopoAtual.adicionar(ctx.IDENT().getText(), tipoRetornoFuncao, Estrutura.PROCEDIMENTO)
@@ -203,31 +205,45 @@ class LASemantico(AnalisadorLAVisitor) :
         # Verifica se a variável existe em cada escopo
         # Devolve erro para o primeiro escopo que não existir.
         if ctx.IDENT() != None:
+            existe= False
             for escopo in self.escoposAninhados.percorrerEscoposAninhados():
                 if not escopo.existe(ctx.IDENT().getText()):
-                    LASemanticoUtils.adicionarErroSemantico(ctx.start, f'tipo {ctx.IDENT().getText()} nao declarado')
-                    break
+                    existe = True
+            if not existe:
+                LASemanticoUtils.adicionarErroSemantico(ctx.start, f'tipo {ctx.IDENT().getText()} nao declarado')
 
         return super().visitTipo_basico_ident(ctx)
     
     def visitIdentificador(self, ctx: AnalisadorLAParser.IdentificadorContext):
-        if ctx.IDENT() != None:
-            for escopo in self.escoposAninhados.percorrerEscoposAninhados():
-                nomeVar = ''
-            i = 0
-            for ident in ctx.IDENT():
-                if i > 0:
-                    nomeVar += '.'
-                nomeVar += ident.getText()
-                i += 1
-            erro = True
-            for escopo in self.escoposAninhados.percorrerEscoposAninhados():
-                if escopo.existe(nomeVar):
-                    erro = False
-                if erro:
-                    LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {nomeVar} nao declarado')
-                    break
-        return super().visitIdentificador(ctx)
+        # if ctx.IDENT() != None:
+        #     for escopo in self.escoposAninhados.percorrerEscoposAninhados():
+        #         nomeVar = ''
+        #     i = 0
+        #     for ident in ctx.IDENT():
+        #         if i > 0:
+        #             nomeVar += '.'
+        #         nomeVar += ident.getText()
+        #         i += 1
+        #     erro = True
+        #     for escopo in self.escoposAninhados.percorrerEscoposAninhados():
+        #         if escopo.existe(nomeVar):
+        #             erro = False
+        #         if erro:
+        #             LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {nomeVar} nao declarado')
+        # return super().visitIdentificador(ctx)
+        nomeVar = ''
+        i = 0
+        for ident in ctx.IDENT():
+            if i > 0:
+                nomeVar += '.'
+            nomeVar += ident.getText()
+            i += 1
+        erro = True
+        for escopo in self.escoposAninhados.percorrerEscoposAninhados():
+            if escopo.existe(nomeVar):
+                erro = False
+        if erro:
+            LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {nomeVar} nao declarado')
 
     # Visitamos a atribuição para acusar erros de tipos incompatíveis
     def visitCmdAtribuicao(self, ctx: AnalisadorLAParser.CmdAtribuicaoContext):
@@ -264,3 +280,34 @@ class LASemantico(AnalisadorLAVisitor) :
         if escopo_atual is None:
             LASemanticoUtils.adicionarErroSemantico(ctx.start, f"comando retorne nao permitido nesse escopo")
         return super().visitCmdRetorne(ctx)
+
+    def visitCmdChamada(self, ctx: AnalisadorLAParser.CmdChamadaContext):
+        print("oi\n\n\n\n\n\n\n\n")
+        #ctx.
+        return super().visitCmdChamada(ctx)
+
+    # Para verificar chamada de função (cmdChamada está dentro dessa regra da gramática)
+    def visitParcela_unario(self, ctx: AnalisadorLAParser.Parcela_unarioContext):
+        
+        escopoAtual = self.escoposAninhados.obterEscopoAtual()
+        try:
+            nome = ctx.IDENT().getText()
+            if escopoAtual.existe(nome):
+                params = escopoAtual.verificarTipo(nome)
+                erro = False
+                # Verificar se temos o mesmo numero de parametros na chamada e na
+                # assinatura da função
+                if len(params) != len(ctx.expressao()):
+                    erro = True
+                else:
+                    # Verificar se os parâmetros da chamada tem o tipo correspondente aos tipos
+                    # especificados na assinatura
+                    for param, expressao in zip(params, ctx.expressao()):
+                        if param.tipo != LASemanticoUtils.verificarTipoExpr(escopoAtual, expressao):
+                            erro = True
+                if erro:
+                    LASemanticoUtils.adicionarErroSemantico(ctx.start, f"incompatibilidade de parametros na chamada de {nome}")
+        except AttributeError:
+            pass
+        
+        return super().visitParcela_unario(ctx)
