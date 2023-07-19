@@ -147,8 +147,7 @@ class LASemantico(AnalisadorLAVisitor) :
             for ident in identificador.IDENT():
                 if i > 0:
                     nomeId += '.'
-                nomeId += ident.getText()
-            print(nomeId, escopoAtual.existe(nomeId), escopoAtual.tabela)
+                nomeId += ident.getText()            
             if escopoAtual.existe(nomeId):
                 LASemanticoUtils.adicionarErroSemantico(identificador.start,
                     f'identificador {identificador.getText()} ja declarado anteriormente')
@@ -197,7 +196,7 @@ class LASemantico(AnalisadorLAVisitor) :
                         tipo = Tipo.LOGICO
                     elif tipo_variavel == 'inteiro' or tipo_variavel == '^inteiro':
                         tipo = Tipo.NUM_INT
-                    escopoAtual.adicionar(identificador.getText(), tipo, Estrutura.VAR)
+                    escopoAtual.adicionar(nomeId, tipo, Estrutura.VAR)
         return super().visitDeclaracao_var(ctx)
     
     # Para analisar a tipagem, visitamos as regras de tipo básico dos identificadores (variáveis da linguagem)
@@ -215,22 +214,6 @@ class LASemantico(AnalisadorLAVisitor) :
         return super().visitTipo_basico_ident(ctx)
     
     def visitIdentificador(self, ctx: AnalisadorLAParser.IdentificadorContext):
-        # if ctx.IDENT() != None:
-        #     for escopo in self.escoposAninhados.percorrerEscoposAninhados():
-        #         nomeVar = ''
-        #     i = 0
-        #     for ident in ctx.IDENT():
-        #         if i > 0:
-        #             nomeVar += '.'
-        #         nomeVar += ident.getText()
-        #         i += 1
-        #     erro = True
-        #     for escopo in self.escoposAninhados.percorrerEscoposAninhados():
-        #         if escopo.existe(nomeVar):
-        #             erro = False
-        #         if erro:
-        #             LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {nomeVar} nao declarado')
-        # return super().visitIdentificador(ctx)
         nomeVar = ''
         i = 0
         for ident in ctx.IDENT():
@@ -244,6 +227,9 @@ class LASemantico(AnalisadorLAVisitor) :
                 erro = False
         if erro:
             LASemanticoUtils.adicionarErroSemantico(ctx.start, f'identificador {nomeVar} nao declarado')
+        
+
+        return super().visitIdentificador(ctx)
 
     # Visitamos a atribuição para acusar erros de tipos incompatíveis
     def visitCmdAtribuicao(self, ctx: AnalisadorLAParser.CmdAtribuicaoContext):
@@ -252,13 +238,22 @@ class LASemantico(AnalisadorLAVisitor) :
         for escopo in escopos:
             if escopo != None:
                 tipoExpressao = LASemanticoUtils.verificarTipoExpr(escopo, ctx=ctx.expressao())
-        print("cmd atribuicao")
         error = False
         pointer_prefix = "^" if ctx.getText()[0] == "^" else ""
-        nomeVar = ctx.identificador().getText()
-        debug(ctx.getText(), tipoExpressao)
+        nomeVar = ''
+        i = 0
+        for ident in ctx.identificador().IDENT():
+            if i > 0:
+                nomeVar += '.'
+            nomeVar += ident.getText()
+            i += 1
+        
+        print("cmd atribuicao", ctx.getText())
+        print(ctx.getText(), tipoExpressao)
+        
         if tipoExpressao != Tipo.INVALIDO:
             for escopo in self.escoposAninhados.percorrerEscoposAninhados():
+                print(nomeVar)
                 if escopo.existe(nomeVar):
                     tipoVar = LASemanticoUtils.verificarTipo(escopo, nomeVar)
                     print(ctx.getText(), f"{tipoVar}")
@@ -268,8 +263,9 @@ class LASemantico(AnalisadorLAVisitor) :
                     if not (varNumeric and expNumeric) and tipoVar != tipoExpressao and tipoExpressao != Tipo.INVALIDO:
                         error = True
         else:
+            print("aqui foi gau")
             error = True
-
+        print("error", error)
         if error:
             LASemanticoUtils.adicionarErroSemantico(ctx.identificador().start, f'atribuicao nao compativel para {pointer_prefix}{nomeVar}')
             
