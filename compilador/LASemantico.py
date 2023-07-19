@@ -257,7 +257,7 @@ class LASemantico(AnalisadorLAVisitor) :
         else:
             error = True
         if error:
-            LASemanticoUtils.adicionarErroSemantico(ctx.identificador().start, f'atribuicao nao compativel para {pointer_prefix}{nomeVar}')
+            LASemanticoUtils.adicionarErroSemantico(ctx.identificador().start, f'atribuicao nao compativel para {pointer_prefix}{ctx.identificador().getText()}')
             
         return super().visitCmdAtribuicao(ctx)
     
