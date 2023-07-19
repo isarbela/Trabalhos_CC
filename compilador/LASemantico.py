@@ -28,7 +28,6 @@ class LASemantico(AnalisadorLAVisitor) :
             if ctx.getText().startswith("funcao"):
                 tipoRetornoFuncao = LASemanticoUtils.getTipo(ctx.tipo_estendido().getText())
                 escopoAtual.adicionar(ctx.IDENT().getText(), tipoRetornoFuncao, Estrutura.FUNCAO)
-                print(tipoRetornoFuncao)
             else:
                 tipoRetornoFuncao = Tipo.VOID
                 escopoAtual.adicionar(ctx.IDENT().getText(), tipoRetornoFuncao, Estrutura.PROCEDIMENTO)
@@ -76,15 +75,14 @@ class LASemantico(AnalisadorLAVisitor) :
     # A declaração local nos dividimos em outras regras na gramática para ficar mais organizado e fácil de implementar
     # Temos as declarações constantes.
     def visitDeclaracao_const(self, ctx: AnalisadorLAParser.Declaracao_constContext):
-        print("declaracao const")
-        
+
         for escopoAtual in self.escoposAninhados.percorrerEscoposAninhados():
             if escopoAtual.existe(ctx.IDENT().getText()):
                 LASemanticoUtils.adicionarErroSemantico(token=ctx.start,
                     mensagem=f'constante {ctx.IDENT().getText()} ja declarado anteriormente')
             else:
                 tipo = Tipo.NUM_INT
-                tipo_const = escopoAtual.verificar(ctx.valor_constante.getText())
+                tipo_const = escopoAtual.verificar(ctx.valor_constante().getText())
                 if tipo_const == 'literal':
                     tipo = Tipo.CADEIA
                 elif tipo_const == 'real':
@@ -121,7 +119,6 @@ class LASemantico(AnalisadorLAVisitor) :
                                                             mensagem=f'identificador {ctx.IDENT().getText()} ja declarado anteriormente')
                 else:
                     escopoAtual.adicionar(ctx.IDENT().getText(), Tipo.REGISTRO, Estrutura.TIPO)
-                    print("adicao", ctx.IDENT().getText(), Tipo.REGISTRO, Estrutura.TIPO, escopoAtual.tabela)
                 # Vamos verificar se não há variáveis com mesmo nome dentro do registro
                 for registro in varRegistros:
                     nomeVar = f"{ctx.IDENT().getText()}.{registro.nome}"
@@ -131,7 +128,6 @@ class LASemantico(AnalisadorLAVisitor) :
                     else:
                         escopoAtual.adicionar(registro.nome, registro.tipo, registro.estrutura)
                         escopoAtual.adicionarTipo(ctx.IDENT().getText(), registro)
-                print('mim add', registro.nome, registro.tipo, registro.estrutura, escopoAtual.tabela)
 
         # tipo = LASemanticoUtils.getTipo(ctx.tipo().getText())
         # escopoAtual.adicionar(ctx.IDENT().getText(), tipo, Estrutura.TIPO)
@@ -204,9 +200,9 @@ class LASemantico(AnalisadorLAVisitor) :
         # Verifica se a variável existe em cada escopo
         # Devolve erro para o primeiro escopo que não existir.
         if ctx.IDENT() != None:
-            existe= False
+            existe = False
             for escopo in self.escoposAninhados.percorrerEscoposAninhados():
-                if not escopo.existe(ctx.IDENT().getText()):
+                if escopo.existe(ctx.IDENT().getText()):
                     existe = True
             if not existe:
                 LASemanticoUtils.adicionarErroSemantico(ctx.start, f'tipo {ctx.IDENT().getText()} nao declarado')
@@ -248,24 +244,18 @@ class LASemantico(AnalisadorLAVisitor) :
             nomeVar += ident.getText()
             i += 1
         
-        print("cmd atribuicao", ctx.getText())
-        print(ctx.getText(), tipoExpressao)
         
         if tipoExpressao != Tipo.INVALIDO:
             for escopo in self.escoposAninhados.percorrerEscoposAninhados():
-                print(nomeVar)
                 if escopo.existe(nomeVar):
                     tipoVar = LASemanticoUtils.verificarTipo(escopo, nomeVar)
-                    print(ctx.getText(), f"{tipoVar}")
                     
                     varNumeric = tipoVar == Tipo.NUM_INT or tipoVar == Tipo.NUM_REAL
                     expNumeric = tipoExpressao == Tipo.NUM_INT or tipoExpressao == Tipo.NUM_REAL
                     if not (varNumeric and expNumeric) and tipoVar != tipoExpressao and tipoExpressao != Tipo.INVALIDO:
                         error = True
         else:
-            print("aqui foi gau")
             error = True
-        print("error", error)
         if error:
             LASemanticoUtils.adicionarErroSemantico(ctx.identificador().start, f'atribuicao nao compativel para {pointer_prefix}{nomeVar}')
             
@@ -273,13 +263,11 @@ class LASemantico(AnalisadorLAVisitor) :
     
     def visitCmdRetorne(self, ctx: AnalisadorLAParser.CmdRetorneContext):
         escopo_atual = self.escoposAninhados.obterEscopoAtual()
-        if escopo_atual is None:
+        if escopo_atual.tipo == Tipo.VOID:
             LASemanticoUtils.adicionarErroSemantico(ctx.start, f"comando retorne nao permitido nesse escopo")
         return super().visitCmdRetorne(ctx)
 
     def visitCmdChamada(self, ctx: AnalisadorLAParser.CmdChamadaContext):
-        print("oi\n\n\n\n\n\n\n\n")
-        #ctx.
         return super().visitCmdChamada(ctx)
 
     # Para verificar chamada de função (cmdChamada está dentro dessa regra da gramática)
