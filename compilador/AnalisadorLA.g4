@@ -60,7 +60,8 @@ cmd: cmdLeia | cmdEscreva | cmdSe | cmdCaso | cmdPara | cmdEnquanto | cmdFaca
     | cmdAtribuicao | cmdChamada | cmdRetorne;
 cmdLeia: 'leia' '(' '^'? identificador (',' '^'? identificador)* ')';
 cmdEscreva: 'escreva' '(' expressao (',' expressao)* ')';
-cmdSe: 'se' expressao 'entao' cmd* ('senao' cmd*)? 'fim_se';
+cmdSe: 'se' expressao 'entao' (cmd)* cmdSenao? 'fim_se';
+cmdSenao: 'senao' (cmd)*;
 cmdCaso: 'caso' exp_aritmetica 'seja' selecao ('senao' cmd*)? 'fim_caso';
 cmdPara: 'para' IDENT '<-' exp_aritmetica 'ate' exp_aritmetica 'faca' cmd* 'fim_para';
 cmdEnquanto: 'enquanto' expressao 'faca' cmd* 'fim_enquanto';

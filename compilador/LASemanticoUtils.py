@@ -182,6 +182,7 @@ class LASemanticoUtils:
     def verificarTipo(tabela: TabelaDeSimbolos, nomeVar: str) -> Tipo:
         return tabela.verificar(nomeVar)
     
+    @staticmethod
     def getTipo(valor: str):
         tipo = None
         if valor == 'literal':
@@ -192,4 +193,17 @@ class LASemanticoUtils:
             tipo = Tipo.NUM_REAL
         elif valor == 'logico':
             tipo = Tipo.LOGICO
+        return tipo
+    
+    @staticmethod
+    def getTipoC(valor: str):
+        tipo = None
+        if valor == 'literal':
+            tipo = 'char'
+        elif valor == 'inteiro':
+            tipo = 'int'
+        elif valor == 'real':
+            tipo = 'float'
+        elif valor == 'logico':
+            tipo = 'bool'
         return tipo
