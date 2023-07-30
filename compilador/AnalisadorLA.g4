@@ -35,7 +35,7 @@ WS  :   ( ' '
 // Regras de produção da gramática LA.
 // Basicamente retiramos do documento Gramatica_LA.pdf disponibilizado no Classroom
 // Com algumas modificações para melhorar a leitura e evitar regras desnecessárias.
-programa: declaracoes 'algoritmo' corpo 'fim_algoritmo';
+programa: declaracoes 'algoritmo' corpo 'fim_algoritmo' EOF;
 declaracoes: (declaracao_local | declaracao_global)*;
 declaracao_local: (declaracao_var | declaracao_const | declaracao_tipo);
 declaracao_var: 'declare' variavel;

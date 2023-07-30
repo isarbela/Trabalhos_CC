@@ -6,10 +6,10 @@ from AnalisadorLALexerErrorListener import AnalisadorLALexerErrorListener
 from AnalisadorLAParserErrorListener import AnalisadorLAParserErrorListener
 from LASemantico import LASemantico
 from LASemanticoUtils import LASemanticoUtils
+from GeradorDeCodigoC import GeradorCodigoC
 
 # Código responsável por ler os tokens gerados pela analisador léxico e salvar em um arquivo
-def main(argv):
-
+def main(argv): 
     # Recebendo o arquivo de entrada
     input_stream = FileStream(argv[1], encoding='utf-8')
     # Arquivo de saida
@@ -28,7 +28,6 @@ def main(argv):
     parser.removeErrorListeners()
     parser.addErrorListener(AnalisadorLAParserErrorListener())
 
-    
     try:
         # Executa o parser para análise sintática
         laSemantico = LASemantico()
@@ -36,14 +35,24 @@ def main(argv):
         laSemantico.visitPrograma(parser.programa())
         for erro in LASemanticoUtils.errosSemanticos:
             output_stream.write(erro + "\n")
-        output_stream.write("Fim da compilacao\n")
+        
+        print(len(LASemanticoUtils.errosSemanticos))
+        if len(LASemanticoUtils.errosSemanticos) == 0:
+            codigo_c = GeradorCodigoC()
+            print('abc')
+            codigo_c.visitPrograma(parser.programa())
+            print('def')
+            print(codigo_c.codigo)
+            for instrucoes in codigo_c.codigo:
+                output_stream.write(f"{instrucoes}\n")
+        else:
+            output_stream.write("Fim da compilacao\n")
     except Exception as e:
         # Deteccao de erro sintatico e lexico
         # gracas aos listeners que implementamos
         output_stream.write(str(e))
         output_stream.write("\nFim da compilacao\n")
     output_stream.close()
-    
  
 if __name__ == '__main__':
     main(sys.argv)

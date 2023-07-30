@@ -1,4 +1,4 @@
-# Generated from T1_CC/compilador/AnalisadorLA.g4 by ANTLR 4.13.0
+# Generated from compilador/AnalisadorLA.g4 by ANTLR 4.13.0
 from antlr4 import *
 if "." in __name__:
     from .AnalisadorLAParser import AnalisadorLAParser
@@ -212,6 +212,15 @@ class AnalisadorLAListener(ParseTreeListener):
 
     # Exit a parse tree produced by AnalisadorLAParser#cmdSe.
     def exitCmdSe(self, ctx:AnalisadorLAParser.CmdSeContext):
+        pass
+
+
+    # Enter a parse tree produced by AnalisadorLAParser#cmdSenao.
+    def enterCmdSenao(self, ctx:AnalisadorLAParser.CmdSenaoContext):
+        pass
+
+    # Exit a parse tree produced by AnalisadorLAParser#cmdSenao.
+    def exitCmdSenao(self, ctx:AnalisadorLAParser.CmdSenaoContext):
         pass
 
 

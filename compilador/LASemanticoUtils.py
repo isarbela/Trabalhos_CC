@@ -207,3 +207,16 @@ class LASemanticoUtils:
         elif valor == 'logico':
             tipo = 'bool'
         return tipo
+    
+    @staticmethod
+    def getMascaraIO(valor: Tipo):
+        tipo = None
+        
+        if valor == Tipo.CADEIA:
+            tipo = 's'
+        elif valor == Tipo.NUM_INT:
+            tipo = 'd'
+        elif valor == Tipo.NUM_REAL:
+            tipo = 'f'
+        
+        return tipo

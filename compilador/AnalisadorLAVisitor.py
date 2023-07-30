@@ -1,4 +1,4 @@
-# Generated from T1_CC/compilador/AnalisadorLA.g4 by ANTLR 4.13.0
+# Generated from compilador/AnalisadorLA.g4 by ANTLR 4.13.0
 from antlr4 import *
 if "." in __name__:
     from .AnalisadorLAParser import AnalisadorLAParser
@@ -121,6 +121,11 @@ class AnalisadorLAVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AnalisadorLAParser#cmdSe.
     def visitCmdSe(self, ctx:AnalisadorLAParser.CmdSeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AnalisadorLAParser#cmdSenao.
+    def visitCmdSenao(self, ctx:AnalisadorLAParser.CmdSenaoContext):
         return self.visitChildren(ctx)
 
 

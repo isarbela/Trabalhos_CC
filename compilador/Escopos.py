@@ -3,9 +3,13 @@ from collections import deque
 from TabelaDeSimbolos import TabelaDeSimbolos, Tipo
 
 class Escopos():
-    def __init__ (self, tipo: Tipo):
+    def __init__ (self, tipo: Tipo = None, tabelas: deque[TabelaDeSimbolos] = None):
         self.pilhaDeTabelas: deque[TabelaDeSimbolos] = deque()
-        self.criarNovoEscopo(tipo)
+        
+        if tabelas is None:
+            self.criarNovoEscopo(tipo)
+        else:
+            self.pilhaDeTabelas.append(tabelas)
 
     def criarNovoEscopo(self, tipo: Tipo):
         self.pilhaDeTabelas.append(TabelaDeSimbolos(tipo))
