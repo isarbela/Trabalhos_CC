@@ -268,7 +268,6 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitExp_aritmetica(self, ctx: AnalisadorLAParser.Exp_aritmeticaContext):
         self.visitTermo(ctx.termo(0))
-        
         for i in range(len(ctx.termo())):
             termo = ctx.termo(i+1)
             self.codigo.append(ctx.op1(i).getText())
@@ -491,7 +490,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             self.visitTipo(ctx.tipo())
             print('ok')
             self.visitIdentificador(ident)
-
+            print("ta tudo bem")
             if tipoC == 'char':
                 self.codigo.append("[50]")
             self.codigo.append(';')

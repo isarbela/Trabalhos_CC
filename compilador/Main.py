@@ -12,6 +12,7 @@ from GeradorDeCodigoC import GeradorCodigoC
 def main(argv): 
     # Recebendo o arquivo de entrada
     input_stream = FileStream(argv[1], encoding='utf-8')
+    print("\n\nCasas de aposta:", argv[1])
     # Arquivo de saida
     output_stream = open(argv[2], 'w')
     # Gerando os tokens

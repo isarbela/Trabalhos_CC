@@ -17,7 +17,7 @@ IDENT : ('a'..'z'|'A'..'Z' | '_') ('_' | 'a'..'z'|'A'..'Z'|'0'..'9')*
 CADEIA 	: '"' ( ESC_SEQ | ~('"'|'\\' | '\n') )* '"'
 	;
 fragment
-ESC_SEQ	: '\\"';
+ESC_SEQ	: '\\"' | '\\n';
 
 // Comentários são identificados através de chaves e fecha chaves.
 COMENTARIO
