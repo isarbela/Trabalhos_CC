@@ -1,4 +1,4 @@
-# Generated from T1_CC/compilador/AnalisadorLA.g4 by ANTLR 4.13.0
+# Generated from compilador/AnalisadorLA.g4 by ANTLR 4.13.0
 from antlr4 import *
 if "." in __name__:
     from .AnalisadorLAParser import AnalisadorLAParser
@@ -226,6 +226,11 @@ class AnalisadorLAVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AnalisadorLAParser#parcela_unario.
     def visitParcela_unario(self, ctx:AnalisadorLAParser.Parcela_unarioContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AnalisadorLAParser#expressao_parenteses.
+    def visitExpressao_parenteses(self, ctx:AnalisadorLAParser.Expressao_parentesesContext):
         return self.visitChildren(ctx)
 
 

@@ -184,6 +184,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         for cmd in ctx.cmd():
             self.visitCmd(cmd)
         self.codigo.append("} while (")
+        print("ctx exprechao", ctx.expressao().getText())
         self.visitExpressao(ctx.expressao())
         self.codigo.append(');')
         return None
@@ -268,7 +269,8 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitExp_aritmetica(self, ctx: AnalisadorLAParser.Exp_aritmeticaContext):
         self.visitTermo(ctx.termo(0))
-        for i in range(len(ctx.termo())):
+        print("EXPSOASPASDOASDOAPSD", ctx.termo(0).getText())
+        for i in range(len(ctx.termo()) - 1):
             termo = ctx.termo(i+1)
             self.codigo.append(ctx.op1(i).getText())
             self.visitTermo(termo)
@@ -277,22 +279,23 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     def visitTermo(self, ctx: AnalisadorLAParser.TermoContext):
         self.visitFator(ctx.fator(0))
         
-        for i in range(len(ctx.fator())):
+        for i in range(len(ctx.fator()) - 1):
             fator = ctx.fator(i+1)
             self.codigo.append(ctx.op2(i).getText())
             self.visitFator(fator)
         return None
     
     def visitFator(self, ctx: AnalisadorLAParser.FatorContext):
+        print("BABBBBAB", ctx.getText())
         self.visitParcela(ctx.parcela(0))
-        
-        for i in range(len(ctx.parcela())):
+        for i in range(len(ctx.parcela()) - 1):
             fator = ctx.parcela(i+1)
-            self.codigo.append(ctx.op3(i).getText())
+            self.codigo.append(ctx.op3(i).getText())            
             self.visitParcela(fator)
         return None
     
     def visitParcela(self, ctx: AnalisadorLAParser.ParcelaContext):
+        print("ASASDSQDASMFÇASKDALSD", ctx.getText())
         if ctx.parcela_unario():
             if ctx.op_unario():
                 self.codigo.append(ctx.op_unario().getText())
@@ -313,14 +316,19 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
                 self.visitExpressao(ctx.expressao(i))
                 if i < len(ctx.expressao() - 1):
                     self.codigo.append(', ')
+        elif ctx.expressao_parenteses():
+            self.codigo.append('(')
+            self.visitExpressao(ctx.expressao_parenteses().expressao())
+            self.codigo.append(')')
         else:
             self.codigo.append(ctx.getText())
         return None
     
     def visitExpressao(self, ctx: AnalisadorLAParser.ExpressaoContext):
         if ctx.termo_logico():
+            print("termos logico from expressao", ctx.termo_logico(0).getText())
             self.visitTermo_logico(ctx.termo_logico(0))
-            for i in range(len(ctx.termo_logico())):
+            for i in range(len(ctx.termo_logico()) - 1):
                 termo = ctx.termo_logico(i+1)
                 self.codigo.append(' || ')
                 self.visitTermo_logico(termo)
@@ -329,7 +337,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     def visitTermo_logico(self, ctx: AnalisadorLAParser.Termo_logicoContext):
         if ctx.fator_logico():
             self.visitFator_logico(ctx.fator_logico(0))
-            for i in range(len(ctx.fator_logico())):
+            for i in range(len(ctx.fator_logico()) - 1):
                 fator = ctx.fator_logico(i+1)
                 self.codigo.append(' && ')
                 self.visitFator_logico(fator)
@@ -343,6 +351,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitParcela_logica(self, ctx: AnalisadorLAParser.Parcela_logicaContext):
         if ctx.exp_relacional():
+            print("ctx exp relacional from visit parcela logica")
             self.visitExp_relacional(ctx.exp_relacional())
         else:
             if ctx.getText() == 'verdadeiro':
@@ -353,8 +362,9 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitExp_relacional(self, ctx: AnalisadorLAParser.Exp_relacionalContext):
         self.visitExp_aritmetica(ctx.exp_aritmetica(0))
-        
-        for i in range(len(ctx.exp_aritmetica())):
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAA", ctx.getText())
+        for i in range(len(ctx.exp_aritmetica()) - 1):
+            print("BBBBBBBBBBBB", ctx.exp_aritmetica(i+1).getText())
             termo = ctx.exp_aritmetica(i+1)
             # Tratando os casos em que os símbolos de operações diferem da linguagem C
             if ctx.op_relacional().getText() == '=':
@@ -420,7 +430,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         self.codigo.append('typedef ')
         tipo = LASemanticoUtils.getTipo(ctx.tipo().getText())
         # Tratando o caso de declaração de structs
-        if ctx.tipo.getText().find('registro') != -1:
+        if ctx.tipo().getText().find('registro') != -1:
             for variavel in ctx.tipo().registro().variavel():
                 for ident in variavel.identificador():
                     tipo_var = LASemanticoUtils.getTipo(variavel.tipo().getText())
