@@ -20,6 +20,7 @@ def main(argv):
     tokens = CommonTokenStream(lexer)
     parser = AnalisadorLAParser(tokens)
 
+    arvore = parser.programa()
     # Tratamento de erros em python
     # Alterando os tratadores padrões de erro para os que criamos
     lexer.removeErrorListeners()
@@ -32,7 +33,7 @@ def main(argv):
         # Executa o parser para análise sintática
         laSemantico = LASemantico()
 
-        laSemantico.visitPrograma(parser.programa())
+        laSemantico.visitPrograma(arvore)
         for erro in LASemanticoUtils.errosSemanticos:
             output_stream.write(erro + "\n")
         
@@ -40,7 +41,7 @@ def main(argv):
         if len(LASemanticoUtils.errosSemanticos) == 0:
             codigo_c = GeradorCodigoC()
             print('abc')
-            codigo_c.visitPrograma(parser.programa())
+            codigo_c.visitPrograma(arvore)
             print('def')
             print(codigo_c.codigo)
             for instrucoes in codigo_c.codigo:

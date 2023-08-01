@@ -218,5 +218,5 @@ class LASemanticoUtils:
             tipo = 'd'
         elif valor == Tipo.NUM_REAL:
             tipo = 'f'
-        
+        print("recebido:", valor, tipo)
         return tipo

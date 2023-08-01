@@ -18,6 +18,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         self.codigo.append("#include <string.h>")
         self.codigo.append("#include <stdbool.h>")
 
+        print("visit programa")
         # Visitar todas as declarações de funções e procedimentos
         for declaracao in ctx.declaracoes().declaracao_global():
             self.visitDeclaracao_global(declaracao)
@@ -26,6 +27,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             self.visitDeclaracao_local(declaracao)
 
         self.codigo.append("int main() {")
+        print("visit p")
         self.visitCorpo(ctx.corpo())
         self.codigo.append("return 0;")
         self.codigo.append("}")
@@ -79,12 +81,10 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
 
     def visitCmd_escreva(self, ctx: AnalisadorLAParser.CmdEscrevaContext):
         for expressao in ctx.expressao():
-            escopo = Escopos(self.tabela)
-            mascaraTipo = LASemanticoUtils.getMascaraIO(LASemanticoUtils.verificarTipoExpr(escopo, expressao))
-            
+            mascaraTipo = LASemanticoUtils.getMascaraIO(LASemanticoUtils.verificarTipoExpr(self.tabela, expressao))
             if self.tabela.existe(expressao.getText()):
                 tipo = self.tabela.verificar(expressao.getText())
-                mascaraTipo= LASemanticoUtils.getMascaraIO(tipo)
+                mascaraTipo = LASemanticoUtils.getMascaraIO(tipo)
             
             self.codigo.append(f'printf("%{mascaraTipo}", {expressao.getText()});')
         return None
@@ -250,7 +250,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     def visitIdentificador(self, ctx: AnalisadorLAParser.IdentificadorContext):
         self.codigo.append(' ')
         # Criando o identificador completo
-        for ident, i in zip(ctx.IDENT(), len(ctx.IDENT())):
+        for ident, i in zip(ctx.IDENT(), range(len(ctx.IDENT()))):
             if i > 0:
                 self.codigo.append('.')
             self.codigo.append(ident.getText())
@@ -383,11 +383,15 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         return None
 
     def visitDeclaracao_local(self, ctx: AnalisadorLAParser.Declaracao_localContext):
+        print("visit local")
         if ctx.declaracao_var():
+            print("visit var")
             self.visitDeclaracao_var(ctx.declaracao_var())
         if ctx.declaracao_const():
+            print("visit const")
             self.visitDeclaracao_const(ctx.declaracao_const())
         if ctx.declaracao_tipo():
+            print("visit tipo")
             self.visitDeclaracao_tipo(ctx.declaracao_tipo())
         return None
 
@@ -432,7 +436,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitTipo(self, ctx: AnalisadorLAParser.TipoContext):
         tipoC = LASemanticoUtils.getTipoC(ctx.getText().replace("^", ''))
-        ponteiro = ctx.getText().find("^") != 1
+        ponteiro = ctx.getText().find("^") != -1
         
         if tipoC:
             self.codigo.append(tipoC)
@@ -453,10 +457,11 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         return None
     
     def visitVariavel(self, ctx: AnalisadorLAParser.VariavelContext):
-        tipoC = LASemanticoUtils.getTipoC(ctx.getText().replace("^", ''))
+        tipoC = LASemanticoUtils.getTipoC(ctx.tipo().getText().replace("^", ''))
         tipoLA = LASemanticoUtils.getTipo(ctx.tipo().getText())
-        
+        print("variavel", tipoC, tipoLA)
         for ident in ctx.identificador():
+            print("pront")
             if ctx.tipo().getText().find('registro') != -1:
                 for variavel in ctx.tipo().registro().variavel():
                     for var_ident in variavel.identificador():
@@ -482,8 +487,9 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
                     self.tabela.adicionar(f'{nome}[{i}]', tipoLA, Estrutura.VAR)
             else:
                 self.tabela.adicionar(ident.getText(), tipoLA, Estrutura.VAR)
-            
+            print("oi")
             self.visitTipo(ctx.tipo())
+            print('ok')
             self.visitIdentificador(ident)
 
             if tipoC == 'char':
