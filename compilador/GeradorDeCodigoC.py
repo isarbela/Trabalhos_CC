@@ -18,7 +18,6 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         self.codigo.append("#include <string.h>")
         self.codigo.append("#include <stdbool.h>")
 
-        print("visit programa")
         # Visitar todas as declarações de funções e procedimentos
         for declaracao in ctx.declaracoes().declaracao_global():
             self.visitDeclaracao_global(declaracao)
@@ -27,7 +26,6 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             self.visitDeclaracao_local(declaracao)
 
         self.codigo.append("int main() {")
-        print("visit p")
         self.visitCorpo(ctx.corpo())
         self.codigo.append("return 0;")
         self.codigo.append("}")
@@ -44,6 +42,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             
         return None
 
+    # Avaliando cada comando possível da linguagem LA
     def visitCmd(self, ctx: AnalisadorLAParser.CmdContext):
         if ctx.cmdLeia():
             self.visitCmd_leia(ctx.cmdLeia())
@@ -67,6 +66,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             self.visitCmd_retorne(ctx.cmdRetorne())
         return None
 
+    # Lógica para gerar código C scanf
     def visitCmd_leia(self, ctx: AnalisadorLAParser.CmdLeiaContext):
         for ident in ctx.identificador():
             tipo_ident = self.tabela.verificar(ident.getText())
@@ -79,6 +79,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
                 self.codigo.append(f'scanf("%{LASemanticoUtils.getMascaraIO(tipo_ident)}", &{ident.getText()});')
         return None
 
+    # Lógica para gerar código C printf
     def visitCmd_escreva(self, ctx: AnalisadorLAParser.CmdEscrevaContext):
         for expressao in ctx.expressao():
             mascaraTipo = LASemanticoUtils.getMascaraIO(LASemanticoUtils.verificarTipoExpr(self.tabela, expressao))
@@ -89,10 +90,12 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             self.codigo.append(f'printf("%{mascaraTipo}", {expressao.getText()});')
         return None
 
+    # Lógica ppara gerar atribuição de variáveis em C
     def visitCmd_atribuicao(self, ctx: AnalisadorLAParser.CmdAtribuicaoContext):
         if ctx.getText().find('^') != -1:
             self.codigo.append('*')
         tipo = self.tabela.verificar(ctx.identificador().getText())
+        # Se for uma cadeia, devemos usar a função strcpy
         if tipo == Tipo.CADEIA:
             self.codigo.append('strcpy(')
             self.visitIdentificador(ctx.identificador())
@@ -102,6 +105,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             self.codigo.append(f' = {ctx.expressao().getText()};')
         return None
 
+    # Lógica para gerar código C if/else
     def visitCmd_se(self, ctx: AnalisadorLAParser.CmdSeContext):
         # Caso primário
         self.codigo.append('if (')
@@ -118,10 +122,12 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             self.codigo.append('}')
         return None
 
+    # Lógica para gerar código C switch/case
     def visitCmd_caso(self, ctx: AnalisadorLAParser.CmdCasoContext):
         self.codigo.append('switch (')
         self.visitExp_aritmetica(ctx.exp_aritmetica())
         self.codigo.append(') {')
+        # Para criar os ¨cases¨
         self.visitSelecao(ctx.selecao())
         
         if ctx.cmd():
@@ -138,6 +144,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
             self.visitItem(item)
         return None
     
+    # Tradução dos items para case
     def visitItem(self, ctx: AnalisadorLAParser.Item_selecaoContext):
         intervalo = ctx.constantes().getText().split('..')
         if len(intervalo) > 0:
@@ -155,7 +162,8 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
                 self.visitCmd(cmd)
             self.codigo.append('break;')
         return None
-        
+
+    # Lógica para gerar código C for   
     def visitCmd_para(self, ctx: AnalisadorLAParser.CmdParaContext):
         ident = ctx.IDENT().getText()
         # Cabeçalho do for
@@ -170,6 +178,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         self.codigo.append('}')
         return None
 
+    # Lógica para gerar código C while
     def visitCmd_enquanto(self, ctx: AnalisadorLAParser.CmdEnquantoContext):
         self.codigo.append("while (")
         self.visitExpressao(ctx.expressao())
@@ -179,16 +188,17 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         self.codigo.append('}')
         return None
 
+    # Lógica para gerar código C do-while
     def visitCmd_faca(self, ctx: AnalisadorLAParser.CmdFacaContext):
         self.codigo.append("do {")
         for cmd in ctx.cmd():
             self.visitCmd(cmd)
         self.codigo.append("} while (")
-        print("ctx exprechao", ctx.expressao().getText())
         self.visitExpressao(ctx.expressao())
         self.codigo.append(');')
         return None
 
+    # Gera código C return
     def visitCmd_retorne(self, ctx: AnalisadorLAParser.CmdRetorneContext):
         self.codigo.append('return ')
         self.visitExpressao(ctx.expressao())
@@ -265,7 +275,6 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitExp_aritmetica(self, ctx: AnalisadorLAParser.Exp_aritmeticaContext):
         self.visitTermo(ctx.termo(0))
-        print("EXPSOASPASDOASDOAPSD", ctx.termo(0).getText())
         for i in range(len(ctx.termo()) - 1):
             termo = ctx.termo(i+1)
             self.codigo.append(ctx.op1(i).getText())
@@ -282,7 +291,6 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         return None
     
     def visitFator(self, ctx: AnalisadorLAParser.FatorContext):
-        print("BABBBBAB", ctx.getText())
         self.visitParcela(ctx.parcela(0))
         for i in range(len(ctx.parcela()) - 1):
             fator = ctx.parcela(i+1)
@@ -291,7 +299,6 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         return None
     
     def visitParcela(self, ctx: AnalisadorLAParser.ParcelaContext):
-        print("ASASDSQDASMFÇASKDALSD", ctx.getText())
         if ctx.parcela_unario():
             if ctx.op_unario():
                 self.codigo.append(ctx.op_unario().getText())
@@ -322,7 +329,6 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitExpressao(self, ctx: AnalisadorLAParser.ExpressaoContext):
         if ctx.termo_logico():
-            print("termos logico from expressao", ctx.termo_logico(0).getText())
             self.visitTermo_logico(ctx.termo_logico(0))
             for i in range(len(ctx.termo_logico()) - 1):
                 termo = ctx.termo_logico(i+1)
@@ -347,7 +353,6 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitParcela_logica(self, ctx: AnalisadorLAParser.Parcela_logicaContext):
         if ctx.exp_relacional():
-            print("ctx exp relacional from visit parcela logica")
             self.visitExp_relacional(ctx.exp_relacional())
         else:
             if ctx.getText() == 'verdadeiro':
@@ -358,9 +363,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     
     def visitExp_relacional(self, ctx: AnalisadorLAParser.Exp_relacionalContext):
         self.visitExp_aritmetica(ctx.exp_aritmetica(0))
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAA", ctx.getText())
         for i in range(len(ctx.exp_aritmetica()) - 1):
-            print("BBBBBBBBBBBB", ctx.exp_aritmetica(i+1).getText())
             termo = ctx.exp_aritmetica(i+1)
             # Tratando os casos em que os símbolos de operações diferem da linguagem C
             if ctx.op_relacional().getText() == '=':
@@ -388,15 +391,11 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         return None
 
     def visitDeclaracao_local(self, ctx: AnalisadorLAParser.Declaracao_localContext):
-        print("visit local")
         if ctx.declaracao_var():
-            print("visit var")
             self.visitDeclaracao_var(ctx.declaracao_var())
         if ctx.declaracao_const():
-            print("visit const")
             self.visitDeclaracao_const(ctx.declaracao_const())
         if ctx.declaracao_tipo():
-            print("visit tipo")
             self.visitDeclaracao_tipo(ctx.declaracao_tipo())
         return None
 
@@ -464,9 +463,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     def visitVariavel(self, ctx: AnalisadorLAParser.VariavelContext):
         tipoC = LASemanticoUtils.getTipoC(ctx.tipo().getText().replace("^", ''))
         tipoLA = LASemanticoUtils.getTipo(ctx.tipo().getText())
-        print("variavel", ctx.tipo().getText(), tipoC, tipoLA)
         for ident in ctx.identificador():
-            print("pront")
             if ctx.tipo().getText().find('registro') != -1:
                 for variavel in ctx.tipo().registro().variavel():
                     for var_ident in variavel.identificador():
@@ -492,11 +489,8 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
                     self.tabela.adicionar(f'{nome}[{i}]', tipoLA, Estrutura.VAR)
             else:
                 self.tabela.adicionar(ident.getText(), tipoLA, Estrutura.VAR)
-            print("oi")
             self.visitTipo(ctx.tipo())
-            print('ok')
             self.visitIdentificador(ident)
-            print("ta tudo bem")
             if tipoC == 'char':
                 self.codigo.append("[50]")
             self.codigo.append(';')

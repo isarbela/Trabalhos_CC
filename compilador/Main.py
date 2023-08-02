@@ -12,7 +12,6 @@ from GeradorDeCodigoC import GeradorCodigoC
 def main(argv): 
     # Recebendo o arquivo de entrada
     input_stream = FileStream(argv[1], encoding='utf-8')
-    print("\n\nCasas de aposta:", argv[1])
     # Arquivo de saida
     output_stream = open(argv[2], 'w')
     # Gerando os tokens
@@ -38,13 +37,9 @@ def main(argv):
         for erro in LASemanticoUtils.errosSemanticos:
             output_stream.write(erro + "\n")
         
-        print(len(LASemanticoUtils.errosSemanticos))
         if len(LASemanticoUtils.errosSemanticos) == 0:
             codigo_c = GeradorCodigoC()
-            print('abc')
             codigo_c.visitPrograma(arvore)
-            print('def')
-            print(codigo_c.codigo)
             for instrucoes in codigo_c.codigo:
                 output_stream.write(f"{instrucoes}\n")
         else:
