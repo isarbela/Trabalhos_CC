@@ -225,11 +225,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
         
         self.codigo.append(") {")
         
-        for declaracao_local in ctx.declaracao_local():
-            self.visitParametro(declaracao_local)
-        
-        for cmd in ctx.cmd():
-            self.visitCmd(cmd) 
+        self.visitCorpo(ctx.corpo()) 
         
         self.codigo.append('}')
         return None
@@ -468,7 +464,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
     def visitVariavel(self, ctx: AnalisadorLAParser.VariavelContext):
         tipoC = LASemanticoUtils.getTipoC(ctx.tipo().getText().replace("^", ''))
         tipoLA = LASemanticoUtils.getTipo(ctx.tipo().getText())
-        print("variavel", tipoC, tipoLA)
+        print("variavel", ctx.tipo().getText(), tipoC, tipoLA)
         for ident in ctx.identificador():
             print("pront")
             if ctx.tipo().getText().find('registro') != -1:
@@ -476,7 +472,7 @@ class GeradorCodigoC(AnalisadorLAVisitor) :
                     for var_ident in variavel.identificador():
                         tipo_var = LASemanticoUtils.getTipo(variavel.tipo().getText())
                         self.tabela.adicionar(f"{ident.getText()}.{var_ident.getText()}", tipo_var, Estrutura.VAR)
-            elif tipoC and tipoLA:
+            elif not tipoC and not tipoLA:
                 entradas = self.tabela.verificarTipo(ctx.tipo().getText())
                 if entradas:
                     for entrada in entradas:
