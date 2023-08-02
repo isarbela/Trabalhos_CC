@@ -37,6 +37,6 @@ Para compilar e executar todos os casos de teste, rodar o comando abaixo na past
   python run.py argv1
   ```
 
-## T1
+## Versões
 
-Como o T1 funciona diferente dos demais projetos, ele se encontra nesta outra branch [T1](https://github.com/isarbela/Trabalhos_CC/tree/trabalho1)
+Para controlar as versões do trabalho em um mesmo repositório foi criado _releases_, com cada uma contendo a resposta desenvolvida pelo grupo para uma etapa do projeto. Então, para obter as respostas corretas para o T4, recomenda-se baixar a release do T4. Isso foi feito por conta da modificação da gramática em algumas etapas, o que pode ocasionar em erros nas etapas posteriores.
